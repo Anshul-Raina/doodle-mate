@@ -210,22 +210,25 @@ class _DrawingScreenState extends State<DrawingScreen> {
   }
 
   void _showBrushSizePicker() {
+    double tempBrushSize = _selectedWidth;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
         title: const Text('Brush Size'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Slider(
-              value: _selectedWidth,
+                value: tempBrushSize,
               min: 1.0,
               max: 20.0,
               divisions: 19,
-              label: _selectedWidth.round().toString(),
+                label: tempBrushSize.round().toString(),
               onChanged: (value) {
-                setState(() {
-                  _selectedWidth = value;
+                  setDialogState(() {
+                    tempBrushSize = value;
                 });
               },
             ),
@@ -234,8 +237,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
               height: 50,
               alignment: Alignment.center,
               child: Container(
-                width: _selectedWidth * 2,
-                height: _selectedWidth * 2,
+                  width: tempBrushSize * 2,
+                  height: tempBrushSize * 2,
                 decoration: BoxDecoration(
                   color: _selectedColor,
                   shape: BoxShape.circle,
@@ -246,10 +249,16 @@ class _DrawingScreenState extends State<DrawingScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Done'),
-          ),
-        ],
+            onPressed: () {
+                setState(() {
+                  _selectedWidth = tempBrushSize;
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('Done'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -291,7 +300,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            
+
             ListTile(
               leading: const Icon(Icons.add_link, color: Colors.blue),
               title: const Text('Create Link'),
@@ -301,7 +310,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
                 _createCollaborativeSession();
               },
             ),
-            
+
             ListTile(
               leading: const Icon(Icons.login, color: Colors.green),
               title: const Text('Join Link'),
@@ -314,8 +323,8 @@ class _DrawingScreenState extends State<DrawingScreen> {
           ],
         ),
       ),
-    );
-  }
+      );
+    }
 
   void _createCollaborativeSession() {
     final sessionId = const Uuid().v4().substring(0, 8);
@@ -355,7 +364,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
                     ),
                   ),
                 );
-              }
+}
             },
             child: const Text('Join'),
           ),
